@@ -12,6 +12,7 @@ The extension samples the current video in real time, spreads its colors behind 
 
 [▶ Watch or download the preview video](<assests/(561) Yves V & Matthew Hill feat. Betsy Blue - Stay (Copyright Free Music) - YouTube - Brave 2026-10-02 20-01-03.mp4>)
 
+
 ## Highlights
 
 - Real-time ambient lighting generated from the playing video
