@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Ambient Light",
+  "version": "2.9.0",
+  "description": "Fills the YouTube background with a smooth ambient glow sampled from the playing video.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "action": {
+    "default_title": "Ambient Light settings",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": [
+        "content-state.js",
+        "content-layer.js",
+        "content-home.js",
+        "content-controls.js",
+        "content-crop.js",
+        "content-renderer.js",
+        "content-player.js",
+        "content-main.js"
+      ],
+      "css": ["ambient.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "popup.css", "popup.js"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ]
+}

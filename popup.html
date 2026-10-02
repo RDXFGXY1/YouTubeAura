@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ambient Light</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="mark" aria-hidden="true"><span></span></div>
+        <div>
+          <h1>Ambient Light</h1>
+          <p>Make every video fill the room.</p>
+        </div>
+        <label class="switch" title="Enable ambient light">
+          <input id="enabled" type="checkbox">
+          <span></span>
+        </label>
+      </header>
+
+      <nav id="section-nav" aria-label="Settings sections"></nav>
+
+      <section>
+        <h2>Quality</h2>
+
+        <label class="toggle-row">
+          <span>Framerate stats</span>
+          <span class="switch small"><input id="showFps" type="checkbox"><span></span></span>
+        </label>
+
+        <label class="toggle-row">
+          <span>Frametime stats</span>
+          <span class="switch small"><input id="showFrametime" type="checkbox"><span></span></span>
+        </label>
+
+        <label>Limit framerate <output data-for="fps"></output></label>
+        <input id="fps" type="range" min="5" max="60" step="1">
+
+        <label>Resolution <output data-for="resolution"></output></label>
+        <input id="resolution" type="range" min="25" max="200" step="5">
+
+        <label class="toggle-row">
+          <span>Smooth motion <small>(frame blending)</small></span>
+          <span class="switch small"><input id="smoothMotion" type="checkbox"><span></span></span>
+        </label>
+      </section>
+
+      <section>
+        <h2>Video</h2>
+
+        <label>Size <output data-for="videoSize"></output></label>
+        <input id="videoSize" type="range" min="50" max="150" step="1">
+
+        <label>Shadow size <output data-for="videoShadowSize"></output></label>
+        <input id="videoShadowSize" type="range" min="0" max="100" step="1">
+
+        <label>Shadow opacity <output data-for="videoShadowOpacity"></output></label>
+        <input id="videoShadowOpacity" type="range" min="0" max="100" step="1">
+      </section>
+
+      <section>
+        <h2>Page content</h2>
+
+        <label>Shadow size <output data-for="pageShadowSize"></output></label>
+        <input id="pageShadowSize" type="range" min="0" max="60" step="1">
+
+        <label>Shadow opacity <output data-for="pageShadowOpacity"></output></label>
+        <input id="pageShadowOpacity" type="range" min="0" max="100" step="1">
+
+        <label class="toggle-row">
+          <span>Shadows on header</span>
+          <span class="switch small"><input id="headerShadows" type="checkbox"><span></span></span>
+        </label>
+
+        <label class="toggle-row">
+          <span>Text and button shadows only</span>
+          <span class="switch small"><input id="textShadowsOnly" type="checkbox"><span></span></span>
+        </label>
+
+        <label>Button &amp; box opacity <output data-for="boxOpacity"></output></label>
+        <input id="boxOpacity" type="range" min="0" max="100" step="1">
+
+        <label>Image opacity <output data-for="imageOpacity"></output></label>
+        <input id="imageOpacity" type="range" min="10" max="100" step="1">
+
+        <label class="toggle-row">
+          <span>Hide everything in theater mode</span>
+          <span class="switch small"><input id="cleanTheater" type="checkbox"><span></span></span>
+        </label>
+
+        <label class="toggle-row">
+          <span>Hide scrollbar</span>
+          <span class="switch small"><input id="hideScrollbar" type="checkbox"><span></span></span>
+        </label>
+      </section>
+
+      <section>
+        <h2>Black bars</h2>
+
+        <label class="toggle-row">
+          <span>Remove black bars <small>[B]</small></span>
+          <span class="switch small"><input id="removeBlackBars" type="checkbox"><span></span></span>
+        </label>
+
+        <label class="toggle-row">
+          <span>Remove black sidebars <small>[V]</small></span>
+          <span class="switch small"><input id="removeBlackSidebars" type="checkbox"><span></span></span>
+        </label>
+
+        <label class="toggle-row">
+          <span>Also remove colored bars</span>
+          <span class="switch small"><input id="removeColoredBars" type="checkbox"><span></span></span>
+        </label>
+
+        <label>Detection offset <output data-for="barDetectionOffset"></output></label>
+        <input id="barDetectionOffset" type="range" min="0" max="15" step="1">
+
+        <label>Black bars size <output data-for="blackBarsSize"></output></label>
+        <input id="blackBarsSize" type="range" min="0" max="25" step="1">
+
+        <label>Black sidebars size <output data-for="blackSidebarsSize"></output></label>
+        <input id="blackSidebarsSize" type="range" min="0" max="25" step="1">
+
+        <label class="toggle-row">
+          <span>Reset crop on next video</span>
+          <span class="switch small"><input id="resetBarsNextVideo" type="checkbox"><span></span></span>
+        </label>
+
+        <label class="toggle-row">
+          <span>Fill video to screen <small>[S]</small></span>
+          <span class="switch small"><input id="fillVideo" type="checkbox"><span></span></span>
+        </label>
+      </section>
+
+      <section>
+        <h2>Filters</h2>
+
+        <label>Brightness <output data-for="videoBrightness"></output></label>
+        <input id="videoBrightness" type="range" min="25" max="200" step="1">
+
+        <label>Contrast <output data-for="videoContrast"></output></label>
+        <input id="videoContrast" type="range" min="25" max="200" step="1">
+
+        <label>Saturation <output data-for="videoSaturation"></output></label>
+        <input id="videoSaturation" type="range" min="0" max="250" step="1">
+      </section>
+
+      <section>
+        <h2>Directions</h2>
+
+        <label class="toggle-row"><span>Top</span><span class="switch small"><input id="directionTop" type="checkbox"><span></span></span></label>
+        <label class="toggle-row"><span>Right</span><span class="switch small"><input id="directionRight" type="checkbox"><span></span></span></label>
+        <label class="toggle-row"><span>Bottom</span><span class="switch small"><input id="directionBottom" type="checkbox"><span></span></span></label>
+        <label class="toggle-row"><span>Left</span><span class="switch small"><input id="directionLeft" type="checkbox"><span></span></span></label>
+      </section>
+
+      <section>
+        <h2>Ambient light</h2>
+        <label for="ambientOrigin">Glow origin</label>
+        <select id="ambientOrigin">
+          <option value="player">Behind video</option>
+          <option value="screen">Whole screen</option>
+        </select>
+
+        <label>Intensity <output data-for="intensity"></output></label>
+        <input id="intensity" type="range" min="20" max="100" step="1">
+
+        <label>Blur <output data-for="blur"></output></label>
+        <input id="blur" type="range" min="20" max="140" step="1">
+
+        <label>Color boost <output data-for="saturation"></output></label>
+        <input id="saturation" type="range" min="80" max="220" step="1">
+
+        <label>Background dim <output data-for="dimming"></output></label>
+        <input id="dimming" type="range" min="0" max="65" step="1">
+
+        <label>Edge size <output data-for="edgeSize"></output></label>
+        <input id="edgeSize" type="range" min="5" max="100" step="1">
+
+        <label>Spread <output data-for="spread"></output></label>
+        <input id="spread" type="range" min="0" max="100" step="1">
+
+        <label>Spread fade start <output data-for="fadeStart"></output></label>
+        <input id="fadeStart" type="range" min="0" max="80" step="1">
+
+        <label>Spread fade curve <output data-for="fadeCurve"></output></label>
+        <input id="fadeCurve" type="range" min="0" max="100" step="1">
+
+        <label>Debanding noise <output data-for="debanding"></output></label>
+        <input id="debanding" type="range" min="0" max="40" step="1">
+
+        <label>Fade-in duration <output data-for="fadeDuration"></output></label>
+        <input id="fadeDuration" type="range" min="0" max="5" step="0.1">
+      </section>
+
+      <section>
+        <h2>General</h2>
+
+        <label for="appearance">Appearance</label>
+        <select id="appearance">
+          <option value="light">Light</option>
+          <option value="default">Default</option>
+          <option value="dark">Dark</option>
+        </select>
+
+        <label for="viewMode">View mode</label>
+        <select id="viewMode">
+          <option value="all">All</option>
+          <option value="small">Small</option>
+          <option value="theater">Theater</option>
+          <option value="fullscreen">Fullscreen</option>
+        </select>
+
+        <label class="toggle-row">
+          <span>Enabled <small>[A]</small></span>
+          <span class="switch small"><input id="enabledGeneral" type="checkbox"><span></span></span>
+        </label>
+      </section>
+
+      <footer>
+        <span>Changes apply instantly</span>
+        <button id="reset" type="button">Reset</button>
+      </footer>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

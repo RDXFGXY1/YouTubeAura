@@ -1,0 +1,687 @@
+:root {
+  --yal-opacity: 0.78;
+  --yal-home-opacity: 0.7;
+  --yal-blur: 72px;
+  --yal-base-blur: 90px;
+  --yal-saturation: 1.45;
+  --yal-dim: 0.24;
+  --yal-page-shadow-size: 15px;
+  --yal-page-shadow-opacity: 0.3;
+  --yal-box-opacity: 0.1;
+  --yal-image-opacity: 1;
+  --yal-video-scale: 1;
+  --yal-video-shadow-size: 20px;
+  --yal-video-shadow-opacity: 0.5;
+  --yal-video-brightness: 1;
+  --yal-video-contrast: 1;
+  --yal-video-saturation: 1;
+  --yal-spread-scale: 1.25;
+  --yal-debanding: 0.08;
+  --yal-fade-duration: 1.5s;
+}
+
+#yal-ambient-root {
+  position: fixed;
+  inset: -100px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--yal-fade-duration) ease;
+  contain: strict;
+}
+
+.yal-preview-layer {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  filter: blur(var(--yal-base-blur)) saturate(var(--yal-saturation)) brightness(0.72);
+  transform: scale(1.16);
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.yal-preview-layer.yal-visible { opacity: 0.82; }
+#yal-ambient-root.yal-frame-ready .yal-preview-layer { opacity: 0; }
+
+html.yal-active #yal-ambient-root {
+  opacity: var(--yal-opacity);
+}
+
+html.yal-active.yal-home-page #yal-ambient-root {
+  opacity: var(--yal-home-opacity);
+}
+
+#yal-ambient-canvas,
+#yal-ambient-base-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#yal-ambient-base-canvas {
+  opacity: 0;
+  filter: blur(var(--yal-base-blur)) saturate(var(--yal-saturation)) brightness(0.72);
+  transform: scale(1.1);
+  transition: opacity 650ms ease;
+}
+
+#yal-ambient-canvas {
+  opacity: 0;
+  filter: blur(var(--yal-blur)) saturate(var(--yal-saturation));
+  transform: scale(var(--yal-spread-scale));
+  transition: transform 180ms ease, filter 180ms ease, opacity 650ms ease;
+}
+
+/* On watch pages, anchor the sampled image to the actual player instead of the viewport center. */
+#yal-ambient-root.yal-player-origin :is(
+  .yal-preview-layer,
+  #yal-ambient-canvas,
+  #yal-ambient-base-canvas
+) {
+  inset: auto;
+  left: calc(var(--yal-player-left) + 100px);
+  top: calc(var(--yal-player-top) + 100px);
+  width: var(--yal-player-width);
+  height: var(--yal-player-height);
+  transform: scale(var(--yal-player-cover-scale));
+  transform-origin: center;
+}
+
+#yal-ambient-root.yal-player-origin .yal-preview-layer {
+  background-position: center;
+}
+
+#yal-ambient-root.yal-frame-ready #yal-ambient-base-canvas { opacity: 0.68; }
+#yal-ambient-root.yal-frame-ready #yal-ambient-canvas { opacity: 1; }
+
+#yal-ambient-shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--yal-dim));
+}
+
+#yal-ambient-noise {
+  position: absolute;
+  inset: 0;
+  opacity: var(--yal-debanding);
+  mix-blend-mode: soft-light;
+  background-image:
+    repeating-radial-gradient(circle at 17% 31%, rgba(255,255,255,.26) 0 1px, transparent 1px 4px),
+    repeating-radial-gradient(circle at 79% 67%, rgba(0,0,0,.24) 0 1px, transparent 1px 5px);
+  background-size: 7px 9px, 11px 8px;
+}
+
+html.yal-theme-light {
+  color-scheme: light;
+  --yt-spec-base-background: #fff;
+  --yt-spec-raised-background: #f2f2f2;
+  --yt-spec-text-primary: #0f0f0f;
+  --yt-spec-text-secondary: #606060;
+}
+
+html.yal-theme-dark {
+  color-scheme: dark;
+  --yt-spec-base-background: #0f0f0f;
+  --yt-spec-raised-background: #212121;
+  --yt-spec-text-primary: #f1f1f1;
+  --yt-spec-text-secondary: #aaa;
+}
+
+#yal-performance-stats {
+  position: fixed;
+  top: 72px;
+  left: 14px;
+  z-index: 99999;
+  display: none;
+  min-width: 92px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(10, 12, 18, 0.78);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  font: 600 11px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+  pointer-events: none;
+}
+
+#yal-performance-stats.yal-visible { display: block; }
+#yal-performance-stats span { color: #82d9ff; }
+
+#yal-settings-panel {
+  position: fixed;
+  top: 68px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 100000;
+  width: min(410px, calc(100vw - 28px));
+  overflow: hidden;
+  border: 0;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--yt-spec-base-background, #0f0f0f) 30%, transparent);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(34px) saturate(1.5);
+  -webkit-backdrop-filter: blur(34px) saturate(1.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(calc(100% + 28px));
+  transition: transform 260ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease, visibility 220ms;
+}
+
+#yal-settings-panel.yal-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+#yal-settings-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+}
+
+#yal-settings-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  font: 300 27px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+#yal-settings-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+html.yal-active body,
+html.yal-active ytd-app,
+html.yal-active #content.ytd-app,
+html.yal-active #page-manager.ytd-app,
+html.yal-active ytd-watch-flexy,
+html.yal-active ytd-watch-flexy[theater],
+html.yal-active ytd-watch-flexy[fullscreen] {
+  background: transparent !important;
+}
+
+html.yal-active body {
+  position: relative;
+}
+
+html.yal-active ytd-app {
+  position: relative;
+}
+
+html.yal-active :is(
+  ytd-browse,
+  ytd-two-column-browse-results-renderer,
+  #primary.ytd-two-column-browse-results-renderer,
+  #contents.ytd-rich-grid-renderer,
+  ytd-rich-grid-renderer,
+  ytd-rich-grid-row,
+  ytd-rich-item-renderer
+) {
+  background: transparent !important;
+}
+
+html.yal-active.yal-home-page :is(
+  ytd-page-manager,
+  ytd-browse[page-subtype="home"],
+  ytd-browse[page-subtype="home"] #primary,
+  ytd-rich-grid-renderer,
+  ytd-rich-grid-renderer #header,
+  ytd-rich-grid-renderer #contents
+) {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html.yal-active.yal-home-page .yal-preview-layer.yal-visible {
+  opacity: 1;
+  filter: blur(64px) saturate(var(--yal-saturation)) brightness(0.78);
+  transform: scale(1.2);
+}
+
+html.yal-active.yal-home-page #yal-ambient-shade {
+  background: rgba(4, 6, 10, 0.28);
+}
+
+/* Home page: one ambient surface, without changing YouTube's native layout. */
+html.yal-active.yal-home-page :is(
+  #masthead-container.ytd-app,
+  ytd-masthead,
+  #masthead.ytd-masthead,
+  #background.ytd-masthead,
+  #start.ytd-masthead,
+  tp-yt-app-drawer,
+  tp-yt-app-drawer #contentContainer,
+  tp-yt-app-drawer #contentWrapper,
+  #guide,
+  #guide-content,
+  #guide-wrapper,
+  ytd-mini-guide-renderer,
+  ytd-guide-renderer,
+  #chips-wrapper,
+  #chips-content
+) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Remove YouTube's stacked hover-card halo while preserving the thumbnail itself. */
+html.yal-active.yal-home-page :is(
+  ytd-rich-item-renderer,
+  ytd-rich-item-renderer #content,
+  ytd-rich-item-renderer #dismissible,
+  ytd-rich-item-renderer ytd-thumbnail,
+  ytd-rich-item-renderer #thumbnail,
+  ytd-moving-thumbnail-renderer,
+  .yt-lockup-view-model,
+  .yt-lockup-view-model__content-image
+) {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+html.yal-active #masthead-container.ytd-app,
+html.yal-active ytd-masthead,
+html.yal-active #masthead.ytd-masthead,
+html.yal-active #background.ytd-masthead {
+  background: rgb(8 10 14 / 34%) !important;
+  background-color: rgb(8 10 14 / 34%) !important;
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+}
+
+/* Let the ambient scene continue through YouTube's top and side navigation. */
+html.yal-active :is(
+  tp-yt-app-drawer,
+  #guide,
+  #guide-content,
+  ytd-mini-guide-renderer,
+  ytd-guide-renderer
+) {
+  background: rgb(8 10 14 / 24%) !important;
+  background-color: rgb(8 10 14 / 24%) !important;
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+}
+
+html.yal-active :is(
+  #container.ytd-searchbox,
+  #search-icon-legacy.ytd-searchbox,
+  #voice-search-button
+) {
+  background-color: rgb(12 14 20 / 38%) !important;
+}
+
+html.yal-active :is(
+  ytd-topbar-menu-button-renderer,
+  ytd-notification-topbar-button-renderer,
+  #avatar-btn,
+  #buttons.ytd-masthead
+) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Page content controls */
+html.yal-active.yal-watch-page:not(.yal-text-shadows-only) #primary-inner,
+html.yal-active.yal-watch-page:not(.yal-text-shadows-only) #secondary-inner,
+html.yal-active.yal-watch-page:not(.yal-text-shadows-only) ytd-comments#comments,
+html.yal-active.yal-watch-page:not(.yal-text-shadows-only) #chat-container {
+  filter: drop-shadow(0 8px var(--yal-page-shadow-size) rgb(0 0 0 / var(--yal-page-shadow-opacity)));
+}
+
+html.yal-active.yal-watch-page.yal-text-shadows-only :is(
+  #title h1,
+  #video-title,
+  #text,
+  #content-text,
+  yt-formatted-string,
+  button,
+  .yt-spec-button-shape-next
+) {
+  text-shadow: 0 2px var(--yal-page-shadow-size) rgb(0 0 0 / var(--yal-page-shadow-opacity));
+}
+
+html.yal-active.yal-header-shadows #masthead-container.ytd-app {
+  box-shadow: 0 8px var(--yal-page-shadow-size) rgb(0 0 0 / var(--yal-page-shadow-opacity));
+}
+
+html.yal-active.yal-watch-page :is(
+  .yt-spec-button-shape-next,
+  ytd-menu-renderer button,
+  #description,
+  #chat-container
+) {
+  --yt-spec-badge-chip-background: rgb(255 255 255 / var(--yal-box-opacity));
+  --yt-spec-button-chip-background-hover: rgb(255 255 255 / calc(var(--yal-box-opacity) + 0.08));
+  background-color: rgb(255 255 255 / var(--yal-box-opacity));
+}
+
+/* Video controls */
+html.yal-active.yal-watch-page .html5-video-player video.html5-main-video {
+  transform: scale(var(--yal-video-scale));
+  filter: brightness(var(--yal-video-brightness)) contrast(var(--yal-video-contrast)) saturate(var(--yal-video-saturation));
+  transform-origin: center center;
+  transition: transform 180ms ease, filter 120ms ease;
+}
+
+html.yal-active.yal-watch-page.yal-fill-video .html5-video-player video.html5-main-video {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  object-fit: cover !important;
+}
+
+html.yal-active.yal-watch-page #movie_player {
+  box-shadow: 0 10px var(--yal-video-shadow-size) rgb(0 0 0 / var(--yal-video-shadow-opacity));
+}
+
+html.yal-active :is(
+  ytd-thumbnail img,
+  yt-img-shadow img,
+  #avatar img,
+  ytd-playlist-thumbnail img
+) {
+  opacity: var(--yal-image-opacity);
+}
+
+html.yal-active.yal-clean-theater ytd-watch-flexy[theater] :is(
+  #below,
+  #secondary,
+  #chat-container
+) {
+  display: none !important;
+}
+
+html.yal-active.yal-clean-theater:has(ytd-watch-flexy[theater]) #masthead-container {
+  display: none !important;
+}
+
+html.yal-active.yal-clean-theater ytd-watch-flexy[theater] #full-bleed-container,
+html.yal-active.yal-clean-theater ytd-watch-flexy[theater] #player-full-bleed-container {
+  max-height: 100vh !important;
+  height: 100vh !important;
+}
+
+html.yal-hide-scrollbar,
+html.yal-hide-scrollbar body {
+  scrollbar-width: none;
+}
+
+html.yal-hide-scrollbar::-webkit-scrollbar,
+html.yal-hide-scrollbar body::-webkit-scrollbar,
+html.yal-hide-scrollbar *::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+html.yal-active #columns.ytd-watch-flexy,
+html.yal-active #below.ytd-watch-flexy {
+  border-radius: 22px;
+}
+
+/* Let the live ambient colors pass through YouTube's opaque utility surfaces. */
+html.yal-active :is(
+  ytd-searchbox #container,
+  .ytSearchboxComponentInputBox,
+  .ytSearchboxComponentSearchButton
+) {
+  background: color-mix(in srgb, var(--yt-spec-base-background) 42%, transparent) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.06), 0 8px 28px rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+}
+
+html.yal-active :is(
+  ytd-playlist-panel-renderer,
+  ytd-playlist-panel-renderer #container.ytd-playlist-panel-renderer,
+  ytd-playlist-panel-renderer #items.ytd-playlist-panel-renderer,
+  ytd-playlist-panel-renderer #contents.ytd-playlist-panel-renderer
+) {
+  background: color-mix(in srgb, var(--yt-spec-base-background) 12%, transparent) !important;
+}
+
+html.yal-active ytd-playlist-panel-renderer #container.ytd-playlist-panel-renderer {
+  overflow: hidden;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.34) !important;
+  backdrop-filter: blur(26px) saturate(1.45);
+  -webkit-backdrop-filter: blur(26px) saturate(1.45);
+}
+
+html.yal-active ytd-playlist-panel-renderer :is(
+  #header,
+  #header.ytd-playlist-panel-renderer,
+  #playlist-actions,
+  #menu,
+  .header
+) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html.yal-active ytd-playlist-panel-video-renderer,
+html.yal-active ytd-playlist-panel-video-renderer #container {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html.yal-active ytd-playlist-panel-video-renderer[selected] {
+  background: rgba(125, 145, 255, 0.2) !important;
+  box-shadow: none !important;
+}
+
+/* Watch page: use one continuous ambient surface instead of separate page panels. */
+html.yal-active.yal-watch-page :is(
+  #masthead-container.ytd-app,
+  ytd-masthead,
+  #masthead.ytd-masthead,
+  #background.ytd-masthead,
+  #start.ytd-masthead,
+  tp-yt-app-drawer,
+  tp-yt-app-drawer #contentContainer,
+  tp-yt-app-drawer #contentWrapper,
+  #guide,
+  #guide-content,
+  #guide-wrapper,
+  ytd-mini-guide-renderer,
+  ytd-guide-renderer,
+  ytd-watch-flexy,
+  #columns.ytd-watch-flexy,
+  #primary.ytd-watch-flexy,
+  #secondary.ytd-watch-flexy,
+  #primary-inner,
+  #secondary-inner,
+  #below.ytd-watch-flexy,
+  ytd-watch-metadata,
+  #above-the-fold,
+  #bottom-row,
+  #description,
+  ytd-comments,
+  ytd-comments-header-renderer,
+  ytd-item-section-renderer,
+  #chat-container,
+  ytd-live-chat-frame,
+  ytd-playlist-panel-renderer,
+  ytd-playlist-panel-renderer #container,
+  ytd-playlist-panel-renderer #items,
+  ytd-playlist-panel-renderer #contents
+) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html.yal-active.yal-watch-page :is(
+  tp-yt-app-drawer,
+  tp-yt-app-drawer #contentContainer,
+  tp-yt-app-drawer #contentWrapper,
+  #guide,
+  #guide-content,
+  #guide-wrapper,
+  ytd-mini-guide-renderer,
+  ytd-guide-renderer
+) {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.yal-active.yal-watch-page :is(
+  #columns.ytd-watch-flexy,
+  #below.ytd-watch-flexy,
+  #description,
+  #chat-container,
+  ytd-playlist-panel-renderer #container
+) {
+  border-radius: 0 !important;
+}
+
+/* Keep this after the shared glass rules so Home cannot inherit their dark tint. */
+html.yal-active.yal-home-page #frosted-glass,
+html.yal-active.yal-home-page #frosted-glass.with-chipbar {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.yal-active.yal-home-page :is(
+  #masthead-container,
+  ytd-masthead,
+  ytd-rich-grid-renderer #header,
+  ytd-feed-filter-chip-bar-renderer
+) {
+  --yt-spec-base-background: transparent;
+  --yt-spec-general-background-a: transparent;
+  --yt-spec-general-background-b: transparent;
+  --yt-spec-brand-background-solid: transparent;
+  --yt-spec-brand-background-primary: transparent;
+  --yt-spec-raised-background: transparent;
+}
+
+html.yal-active.yal-home-page :is(
+  #masthead-container.ytd-app,
+  ytd-masthead,
+  ytd-masthead #container,
+  #masthead.ytd-masthead,
+  #background.ytd-masthead,
+  #start.ytd-masthead,
+  tp-yt-app-drawer,
+  tp-yt-app-drawer #contentContainer,
+  tp-yt-app-drawer #contentWrapper,
+  #guide,
+  #guide-content,
+  #guide-wrapper,
+  ytd-mini-guide-renderer,
+  ytd-guide-renderer,
+  ytd-rich-grid-renderer #header,
+  ytd-feed-filter-chip-bar-renderer,
+  ytd-feed-filter-chip-bar-renderer #background,
+  #chips-wrapper,
+  #chips-content
+) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.yal-active.yal-home-page :is(
+  ytd-masthead [id="container"],
+  ytd-masthead [id="background"],
+  ytd-masthead [id="center"],
+  ytd-masthead [id="end"],
+  ytd-rich-grid-renderer > [id="header"],
+  ytd-feed-filter-chip-bar-renderer [id="background"],
+  ytd-feed-filter-chip-bar-renderer [id="chips-wrapper"],
+  ytd-feed-filter-chip-bar-renderer [id="chips-content"]
+) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.yal-active.yal-home-page :is(
+  #masthead-container.ytd-app,
+  ytd-masthead,
+  ytd-rich-grid-renderer #header,
+  ytd-feed-filter-chip-bar-renderer,
+  #chips-wrapper,
+  #chips-content
+)::before,
+html.yal-active.yal-home-page :is(
+  #masthead-container.ytd-app,
+  ytd-masthead,
+  ytd-rich-grid-renderer #header,
+  ytd-feed-filter-chip-bar-renderer,
+  #chips-wrapper,
+  #chips-content
+)::after {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.yal-player-button {
+  width: 48px !important;
+}
+
+.yal-player-button svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+  opacity: 0.72;
+  transition: opacity 150ms ease, filter 150ms ease;
+}
+
+.yal-player-button.yal-on svg,
+.yal-player-button:hover svg {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yal-ambient-root { transition: none; }
+}
