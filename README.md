@@ -4,6 +4,14 @@ A lightweight Chrome and Edge extension that turns YouTube videos and thumbnails
 
 The extension samples the current video in real time, spreads its colors behind the player, and blends the effect through YouTube's header, navigation, metadata, comments, chat, and playlist areas. On the Home page, hovering over a thumbnail creates the same effect before the video is opened.
 
+## Preview
+
+<video controls width="100%">
+  <source src="./assests/%28561%29%20Yves%20V%20&amp;%20Matthew%20Hill%20feat.%20Betsy%20Blue%20-%20Stay%20%28Copyright%20Free%20Music%29%20-%20YouTube%20-%20Brave%202026-10-02%2020-01-03.mp4" type="video/mp4">
+</video>
+
+[▶ Watch or download the preview video](<assests/(561) Yves V & Matthew Hill feat. Betsy Blue - Stay (Copyright Free Music) - YouTube - Brave 2026-10-02 20-01-03.mp4>)
+
 ## Highlights
 
 - Real-time ambient lighting generated from the playing video
